@@ -278,6 +278,7 @@ def run_episode(task_id: str) -> float:
     print(f"\n{'='*65}")
     print(f"  TASK: {task_id.upper()}")
     print(f"{'='*65}")
+    print(f"[START] task={task_id}", flush=True)
 
     obs       = env_reset(task_id)
     messages  = [{"role": "system", "content": SYSTEM_PROMPT}]
@@ -287,7 +288,9 @@ def run_episode(task_id: str) -> float:
     print(f"  Balance: {obs.get('balance_usdt', 0):.2f} USDT")
     print(f"  Task   : {obs.get('task_description', '')[:100]}...")
 
+    actual_steps = 0
     for step_num in range(MAX_STEPS):
+        actual_steps = step_num + 1
         print(f"\n  ── Step {step_num+1:03d} ──────────────────────────────────────────")
         print(f"  Price: {obs.get('current_price', 0):.2f}  |  "
               f"Balance: {obs.get('balance_usdt', 0):.4f}  |  "
@@ -338,6 +341,7 @@ def run_episode(task_id: str) -> float:
         obs    = result.get("observation", obs)
 
         print(f"  reward={reward:+.3f}  score={score:.3f}  done={done}")
+        print(f"[STEP] step={step_num+1} reward={reward}", flush=True)
         if info:
             for k, v in info.items():
                 print(f"    {k}: {v}")
@@ -354,6 +358,7 @@ def run_episode(task_id: str) -> float:
     print(f"  │ Trades:  {grade.get('trades', 0)} ({grade.get('win', 0)}W / {grade.get('loss', 0)}L)                       │")
     print(f"  │ PnL:     {grade.get('pnl_pct', 0):+.2f}%                              │")
     print(f"  └─────────────────────────────────────────────────────────┘")
+    print(f"[END] task={task_id} score={grade.get('score', 0.0)} steps={actual_steps}", flush=True)
 
     return grade.get("score", 0.0)
 
