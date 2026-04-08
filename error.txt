@@ -1,0 +1,164 @@
+﻿python : Traceback 
+(most recent call last):
+At line:1 char:1
++ python main.py 2>&1 | 
+Out-File -FilePath 
+error.txt -Encoding utf8
++ ~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo      
+        : NotSpecified  
+  : (Traceback (most    
+ recent call last)::    
+String) [], RemoteE    
+xception
+    + FullyQualifiedErr 
+   orId : NativeComman  
+  dError
+ 
+  File "C:\Users\mohit\D
+ownloads\openenv-crypto-
+trader\openenv-crypto-tr
+ader\main.py", line 3, 
+in <module>
+    uvicorn.run("server.
+app:app", 
+host="0.0.0.0", 
+port=7860, 
+reload=False, 
+log_level="info")
+    ~~~~~~~~~~~^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\mohit\a
+naconda3\Lib\site-packag
+es\uvicorn\main.py", 
+line 606, in run
+    server.run()
+    ~~~~~~~~~~^^
+  File "C:\Users\mohit\a
+naconda3\Lib\site-packag
+es\uvicorn\server.py", 
+line 75, in run
+    return asyncio_run(s
+elf.serve(sockets=socket
+s), loop_factory=self.co
+nfig.get_loop_factory())
+  File "C:\Users\mohit\a
+naconda3\Lib\asyncio\run
+ners.py", line 195, in 
+run
+    return 
+runner.run(main)
+           
+~~~~~~~~~~^^^^^^
+  File "C:\Users\mohit\a
+naconda3\Lib\asyncio\run
+ners.py", line 118, in 
+run
+    return self._loop.ru
+n_until_complete(task)
+           ~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\mohit\a
+naconda3\Lib\asyncio\bas
+e_events.py", line 725, 
+in run_until_complete
+    return 
+future.result()
+           
+~~~~~~~~~~~~~^^
+  File "C:\Users\mohit\a
+naconda3\Lib\site-packag
+es\uvicorn\server.py", 
+line 79, in serve
+    await 
+self._serve(sockets)
+  File "C:\Users\mohit\a
+naconda3\Lib\site-packag
+es\uvicorn\server.py", 
+line 86, in _serve
+    config.load()
+    ~~~~~~~~~~~^^
+  File "C:\Users\mohit\a
+naconda3\Lib\site-packag
+es\uvicorn\config.py", 
+line 441, in load
+    self.loaded_app = im
+port_from_string(self.ap
+p)
+                      ~~
+~~~~~~~~~~~~~~~~^^^^^^^^
+^^
+  File "C:\Users\mohit\a
+naconda3\Lib\site-packag
+es\uvicorn\importer.py",
+ line 19, in 
+import_from_string
+    module = importlib.i
+mport_module(module_str)
+  File "C:\Users\mohit\a
+naconda3\Lib\importlib\_
+_init__.py", line 88, 
+in import_module
+    return _bootstrap._g
+cd_import(name[level:], 
+package, level)
+           ~~~~~~~~~~~~~
+~~~~~~~~~^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^
+  File "<frozen 
+importlib._bootstrap>", 
+line 1387, in 
+_gcd_import
+  File "<frozen 
+importlib._bootstrap>", 
+line 1360, in 
+_find_and_load
+  File "<frozen 
+importlib._bootstrap>", 
+line 1331, in 
+_find_and_load_unlocked
+  File "<frozen 
+importlib._bootstrap>", 
+line 935, in 
+_load_unlocked
+  File "<frozen importli
+b._bootstrap_external>",
+ line 1027, in 
+exec_module
+  File "<frozen 
+importlib._bootstrap>", 
+line 488, in _call_with_
+frames_removed
+  File "C:\Users\mohit\D
+ownloads\openenv-crypto-
+trader\openenv-crypto-tr
+ader\server\app.py", 
+line 14, in <module>
+    from 
+server.environment 
+import CryptoTradingEnv
+  File "C:\Users\mohit\D
+ownloads\openenv-crypto-
+trader\openenv-crypto-tr
+ader\server\environment.
+py", line 19, in 
+<module>
+    from server.graders 
+import run_grader
+  File "C:\Users\mohit\D
+ownloads\openenv-crypto-
+trader\openenv-crypto-tr
+ader\server\graders.py",
+ line 68
+    max_loss_pct = 
+max(abs(t.pnl_pct) for 
+t in trades if t.pnl < 
+0, default=0)
+                       ^
+^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^
+SyntaxError: Generator 
+expression must be 
+parenthesized

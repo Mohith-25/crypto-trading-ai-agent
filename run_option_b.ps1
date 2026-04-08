@@ -1,0 +1,15 @@
+$env:BINANCE_API_KEY="your_binance_api_key_here"
+$env:BINANCE_API_SECRET="your_binance_api_secret_here"
+$env:BINANCE_TESTNET="true"
+$env:TRADING_MODE="SPOT"
+$env:HF_TOKEN="your_hf_token_here"
+$env:SYMBOL="BTCUSDT"
+$env:INTERVAL="5m"
+$env:RISK_PCT="0.02"
+$env:SL_PCT="0.008"
+$env:TP_PCT="0.024"
+$env:MAX_TRADES="20"
+$env:SLEEP_SEC="300"
+
+Write-Host "Starting auto_trader.py (Continuous Always-On Trader)..."
+python auto_trader.py

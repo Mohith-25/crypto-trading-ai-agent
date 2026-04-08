@@ -1,0 +1,139 @@
+name: crypto-trading-ai-agent
+version: "1.0.0"
+description: >
+  A real-world OpenEnv environment for AI-powered cryptocurrency trading.
+  An LLM agent analyzes live market data from Binance (testnet/live),
+  computes technical indicators, and automatically executes BUY/SELL orders
+  with stop-loss and take-profit. Three tasks from easy scalping to hard
+  full AI swing trading.
+
+author: "OpenEnv Crypto Trading Team"
+license: MIT
+
+tags:
+  - openenv
+  - crypto
+  - trading
+  - reinforcement-learning
+  - binance
+  - real-world
+  - finance
+
+tasks:
+  - id: task1
+    name: "BTC/USDT 1m Scalping (Easy)"
+    description: >
+      Scalp BTC/USDT on 1-minute candles. Buy when RSI<30 + BB lower band,
+      sell at take-profit (1.5%) or stop-loss (0.5%).
+    difficulty: easy
+    max_steps: 60
+    score_range: [0.0, 1.0]
+    symbol: BTCUSDT
+    interval: 1m
+
+  - id: task2
+    name: "ETH/USDT 15m Swing Trading (Medium)"
+    description: >
+      Swing trade ETH/USDT on 15-minute candles using MACD + EMA crossover.
+      Target 3% TP with 1% SL (3:1 RRR).
+    difficulty: medium
+    max_steps: 100
+    score_range: [0.0, 1.0]
+    symbol: ETHUSDT
+    interval: 15m
+
+  - id: task3
+    name: "BTC/USDT 5m Full AI Trading (Hard)"
+    description: >
+      Full AI trading on BTC/USDT 5-minute candles. All indicators (RSI, MACD,
+      BB, EMA, ATR, ADX). Dynamic ATR-based position sizing. Target Sharpe > 1.
+    difficulty: hard
+    max_steps: 200
+    score_range: [0.0, 1.0]
+    symbol: BTCUSDT
+    interval: 5m
+
+endpoints:
+  reset:
+    method: POST
+    path: /reset
+  step:
+    method: POST
+    path: /step
+  state:
+    method: GET
+    path: /state
+  grade:
+    method: GET
+    path: /grade
+
+action_space:
+  type: discrete_structured
+  actions:
+    - name: buy
+      description: Open a long position with automatic SL+TP
+      params: [stop_loss, take_profit, quantity]
+    - name: sell
+      description: Open short (futures) or close long (spot)
+      params: [stop_loss, take_profit]
+    - name: close
+      description: Close current position at market price
+      params: [reason]
+    - name: hold
+      description: Do nothing this step
+    - name: set_sl
+      description: Update stop-loss on open position
+      params: [stop_loss]
+    - name: set_tp
+      description: Update take-profit on open position
+      params: [take_profit]
+
+observation_space:
+  type: structured
+  fields:
+    - name: symbol
+      type: str
+    - name: current_price
+      type: float
+    - name: candles
+      type: "List[Candle]"
+      description: "Last 50 OHLCV candles"
+    - name: indicators
+      type: Indicators
+      description: "RSI, MACD, BB, EMA9/21/50, ATR, ADX"
+    - name: position
+      type: "Optional[Position]"
+      description: "Open position with entry, qty, SL, TP"
+    - name: balance_usdt
+      type: float
+    - name: equity
+      type: float
+      description: "balance + unrealised PnL"
+    - name: context
+      type: dict
+      description: "step count, trade history summary, PnL"
+
+reward:
+  type: dense
+  range: [-1.0, 1.0]
+  description: >
+    Small rewards for valid trade actions (+0.02), close (+0.01),
+    SL/TP updates (+0.01). Completion bonus based on final score.
+    Penalties for invalid actions (-0.02 to -0.05).
+    15% drawdown triggers forced episode end.
+
+runtime:
+  port: 7860
+  framework: fastapi
+  python: "3.11"
+
+inference:
+  script: inference.py
+  env_vars:
+    - API_BASE_URL
+    - MODEL_NAME
+    - HF_TOKEN
+    - BINANCE_API_KEY
+    - BINANCE_API_SECRET
+    - BINANCE_TESTNET
+    - TRADING_MODE
