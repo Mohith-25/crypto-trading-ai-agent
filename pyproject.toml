@@ -1,0 +1,18 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "crypto-trading-ai-agent"
+version = "1.0.0"
+description = "AI-powered cryptocurrency trading agent"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "pydantic",
+    "openai",
+    "requests",
+    "python-multipart"
+]
