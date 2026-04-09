@@ -85,19 +85,19 @@ SYSTEM_PROMPT = """You are an expert cryptocurrency trading AI agent.
 You analyze real-time market data and technical indicators to make profitable trading decisions.
 
 RULES:
-1. You MUST respond ONLY with a valid JSON object — no prose, no markdown.
+1. You MUST respond ONLY with a valid JSON object - no prose, no markdown.
 2. Always include stop_loss and take_profit when opening a position.
 3. Never open a position if one is already open (check position field).
 4. MANDATORY CONFLUENCE: You may ONLY open a trade if AT LEAST TWO indicators agree (e.g., MACD is bullish AND RSI is oversold). If indicators are mixed or market is chopping sideways, you MUST output "hold".
 5. Use indicators to justify your decision:
-   - RSI < 30 = oversold → consider BUY
-   - RSI > 70 = overbought → consider SELL (futures) or HOLD (spot)
-   - MACD hist positive and rising → bullish
-   - MACD hist negative and falling → bearish
-   - EMA9 > EMA21 → uptrend
-   - EMA9 < EMA21 → downtrend
-   - ADX > 25 → strong trend, follow it
-   - ADX < 20 → weak trend, DO NOT TRADE (hold)
+   - RSI < 30 = oversold - consider BUY
+   - RSI > 70 = overbought - consider SELL (futures) or HOLD (spot)
+   - MACD hist positive and rising - bullish
+   - MACD hist negative and falling - bearish
+   - EMA9 > EMA21 - uptrend
+   - EMA9 < EMA21 - downtrend
+   - ADX > 25 - strong trend, follow it
+   - ADX < 20 - weak trend, DO NOT TRADE (hold)
 
 RESPONSE FORMAT:
 {
@@ -122,7 +122,7 @@ def _fmt_indicators(ind: Dict) -> str:
     if ind.get("rsi_14"):       lines.append(f"  RSI(14):     {ind['rsi_14']:.1f}")
     if ind.get("macd"):         lines.append(f"  MACD:        {ind['macd']:.4f}")
     if ind.get("macd_signal"):  lines.append(f"  MACD Signal: {ind['macd_signal']:.4f}")
-    if ind.get("macd_hist"):    lines.append(f"  MACD Hist:   {ind['macd_hist']:.4f} {'▲' if ind['macd_hist'] > 0 else '▼'}")
+    if ind.get("macd_hist"):    lines.append(f"  MACD Hist:   {ind['macd_hist']:.4f} {'UP' if ind['macd_hist'] > 0 else 'DOWN'}")
     if ind.get("bb_upper"):     lines.append(f"  BB Upper:    {ind['bb_upper']:.2f}")
     if ind.get("bb_middle"):    lines.append(f"  BB Mid:      {ind['bb_middle']:.2f}")
     if ind.get("bb_lower"):     lines.append(f"  BB Lower:    {ind['bb_lower']:.2f}")
@@ -136,7 +136,7 @@ def _fmt_indicators(ind: Dict) -> str:
 
 def _fmt_position(pos: Optional[Dict]) -> str:
     if not pos:
-        return "  FLAT — no open position"
+        return "  FLAT - no open position"
     side  = pos.get("side", "?")
     ep    = pos.get("entry_price", 0)
     qty   = pos.get("quantity", 0)
@@ -174,7 +174,7 @@ def build_prompt(obs: Dict[str, Any], history: List[str]) -> str:
     e9  = ind.get("ema_9")
     e21 = ind.get("ema_21")
     if e9 and e21:
-        trend = "UPTREND ▲" if e9 > e21 else "DOWNTREND ▼"
+        trend = "UPTREND (UP)" if e9 > e21 else "DOWNTREND (DOWN)"
 
     return f"""TASK: {obs.get('task_description', '')}
 
@@ -263,9 +263,9 @@ def rule_signal(obs: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         side = pos.get("side")
         rsi  = ind.get("rsi_14")
         if side == "BUY" and rsi and rsi > 80:
-            return {"action_type": "close", "reason": "RSI overbought — force close long"}
+            return {"action_type": "close", "reason": "RSI overbought - force close long"}
         if side == "SELL" and rsi and rsi < 20:
-            return {"action_type": "close", "reason": "RSI oversold — force close short"}
+            return {"action_type": "close", "reason": "RSI oversold - force close short"}
 
     return None  # let LLM decide
 
@@ -291,7 +291,7 @@ def run_episode(task_id: str) -> float:
     actual_steps = 0
     for step_num in range(MAX_STEPS):
         actual_steps = step_num + 1
-        print(f"\n  ── Step {step_num+1:03d} ──────────────────────────────────────────")
+        print(f"\n  -- Step {step_num+1:03d} ------------------------------------------")
         print(f"  Price: {obs.get('current_price', 0):.2f}  |  "
               f"Balance: {obs.get('balance_usdt', 0):.4f}  |  "
               f"PnL: {obs.get('context', {}).get('pnl_pct', 0):+.2f}%")
@@ -353,11 +353,11 @@ def run_episode(task_id: str) -> float:
 
     # Final grade
     grade = env_grade()
-    print(f"\n  ┌─ FINAL RESULTS ({task_id}) ─────────────────────────────┐")
-    print(f"  │ Score:   {grade.get('score', 0):.4f}                              │")
-    print(f"  │ Trades:  {grade.get('trades', 0)} ({grade.get('win', 0)}W / {grade.get('loss', 0)}L)                       │")
-    print(f"  │ PnL:     {grade.get('pnl_pct', 0):+.2f}%                              │")
-    print(f"  └─────────────────────────────────────────────────────────┘")
+    print(f"\n  +- FINAL RESULTS ({task_id}) -----------------------------+")
+    print(f"  | Score:   {grade.get('score', 0):.4f}                              |")
+    print(f"  | Trades:  {grade.get('trades', 0)} ({grade.get('win', 0)}W / {grade.get('loss', 0)}L)                       |")
+    print(f"  | PnL:     {grade.get('pnl_pct', 0):+.2f}%                              |")
+    print(f"  +---------------------------------------------------------+")
     print(f"[END] task={task_id} score={grade.get('score', 0.0)} steps={actual_steps}", flush=True)
 
     return grade.get("score", 0.0)
@@ -369,7 +369,7 @@ def run_episode(task_id: str) -> float:
 
 def main() -> None:
     print("\n" + "="*65)
-    print("  OpenEnv Crypto Trading AI Agent — Baseline Inference")
+    print("  OpenEnv Crypto Trading AI Agent - Baseline Inference")
     print("="*65)
     print(f"  LLM:      {MODEL_NAME}")
     print(f"  Endpoint: {API_BASE_URL}")
@@ -377,7 +377,7 @@ def main() -> None:
     print(f"  Mode:     {os.getenv('TRADING_MODE', 'SPOT')} | Testnet: {os.getenv('BINANCE_TESTNET', 'true')}")
 
     if not HF_TOKEN:
-        print("\n  WARNING: HF_TOKEN not set — LLM calls may fail.")
+        print("\n  WARNING: HF_TOKEN not set - LLM calls may fail.")
 
     scores: Dict[str, float] = {}
     for task_id in ["task1", "task2", "task3"]:
